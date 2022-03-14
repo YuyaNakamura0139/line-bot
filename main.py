@@ -28,7 +28,7 @@ async def handle_events(events):
             pass
 
 
-@app.get("/messaging_api/handle_request")
+@app.post("/messaging_api/handle_request")
 async def handle_request(request: Request, background_tasks: BackgroundTasks):
     events = parser.parse(
         (await request.body()).decode("utf-8"),
