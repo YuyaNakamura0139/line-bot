@@ -12,7 +12,7 @@ SECRET = os.getenv("LINE_CHANNEL_SECRET")
 
 
 line_api = AioLineBotApi(channel_access_token=ACCESS_TOKEN)
-parser = WebhookParser(channenl_secret=SECRET)
+parser = WebhookParser(channel_secret=SECRET)
 
 app = FastAPI()
 
