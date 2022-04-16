@@ -1,6 +1,6 @@
 from decouple import config
 import motor.motor_asyncio
-from typing import Union
+from typing import Union, List
 from bson import ObjectId
 
 MONGO_API_KEY = config("MONGO_API_KEY")
@@ -12,17 +12,35 @@ collection_practice_menu = database.practice_menu
 def practice_serializer(practice) -> dict:
     return {
         "id": str(practice["_id"]),
-        "practice_id": practice["practice_id"],
+        "practice_period": practice["practice_period"],
         "practice_name": practice["practice_name"],
         "url": practice["url"],
     }
 
 
-async def db_get_practice_menu(practice_id: str) -> dict:
+async def db_get_practice_menu(practice_name: str) -> dict:
     """練習メニュー情報の取得"""
 
-    practice = await collection_practice_menu.find_one({"pracitce_id": practice_id})
-    return practice
+    practice = await collection_practice_menu.find_one({"pracitce_name": practice_name})
+    return practice_serializer(practice)
+
+
+async def db_get_practice_menu_by_practice_period(practice_period: str) -> list:
+    """ピリオドから練習メニューのリストを取得"""
+
+    practice_name_list = []
+    for practice in await collection_practice_menu.find(
+        {"practice_period": practice_period}
+    ).to_list(length=10):
+        practice_name_list.append(practice["practice_name"])
+    return practice_name_list
+
+
+async def db_get_url_by_practice_name(practice_name: str) -> list:
+    """practice_nameからurlを取得"""
+
+    practice = await collection_practice_menu.find_one({"practice_name": practice_name})
+    return practice["url"]
 
 
 async def db_get_practice_menus() -> list:

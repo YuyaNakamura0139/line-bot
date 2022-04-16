@@ -35,7 +35,7 @@ async def create_practice(response: Response, data: PracticeBody):
 
 
 @router.put("/practice/{id}", response_model=Practice)
-async def update_todo(id: str, data: PracticeBody):
+async def update_practice(id: str, data: PracticeBody):
     todo = jsonable_encoder(data)
     res = await db_update_practice_menu(id, todo)
     if res:
@@ -44,7 +44,7 @@ async def update_todo(id: str, data: PracticeBody):
 
 
 @router.delete("/practice/{id}", response_model=SuccessMsg)
-async def delete_todo(id: str):
+async def delete_practice(id: str):
     res = await db_delete_practice_menu(id)
     if res:
         return {"message": "Successfully deleted"}

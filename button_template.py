@@ -8,6 +8,7 @@ from linebot.models import (
     CarouselTemplate,
     CarouselColumn,
     MessageAction,
+    URIAction,
 )
 
 
@@ -67,13 +68,17 @@ def select_day_template():
     return buttons_template_message
 
 
-def final_check_button(day, menu):
+def final_check_button(day, menu_list, time_list):
     """最終確認ボタン"""
+
+    menu_and_time = ""
+    for menu, time in zip(menu_list, time_list):
+        menu_and_time += f"・{menu}({time})\n"
 
     confirm_template_message = TemplateSendMessage(
         alt_text="Confirm template",
         template=ConfirmTemplate(
-            text="以下の内容で通知しても良いかな？\n\n練習予定日: {}\n練習メニュー:\n{}".format(day, menu),
+            text=f"以下の内容で通知しても良いかな？\n練習予定日: {day}\n練習メニュー:\n{menu_and_time}",
             actions=[
                 MessageAction(label="はい", text="はい"),
                 MessageAction(label="いいえ", text="いいえ"),
@@ -84,62 +89,58 @@ def final_check_button(day, menu):
     return confirm_template_message
 
 
-def select_practice_template():
+def practice_check_button():
+    """練習内容確認ボタン"""
+
+    confirm_template_message = TemplateSendMessage(
+        alt_text="Confirm template",
+        template=ConfirmTemplate(
+            text="練習メニューを追加しますか？",
+            actions=[
+                MessageAction(label="はい", text="はい"),
+                MessageAction(label="いいえ", text="いいえ"),
+            ],
+        ),
+    )
+
+    return confirm_template_message
+
+
+def select_practice_template(menu_name_list):
+    columns_list = []
+    for menu in menu_name_list:
+        columns_list.append(
+            CarouselColumn(
+                title=f"{menu}",
+                text=f"{menu}",
+                actions=[MessageAction(label="追加する", text=f"{menu}")],
+            )
+        )
+
     carousel_template_message = TemplateSendMessage(
         alt_text="Carousel template",
         template=CarouselTemplate(
-            columns=[
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-            ]
+            columns=columns_list,
+        ),
+    )
+    return carousel_template_message
+
+
+def practice_info_template(menu_name_list, url_list):
+    columns_list = []
+    for menu, url in zip(menu_name_list, url_list):
+        columns_list.append(
+            CarouselColumn(
+                title=f"{menu}",
+                text=f"{menu}",
+                actions=[URIAction(label="ドキュメント", uri=f"{url}")],
+            )
+        )
+
+    carousel_template_message = TemplateSendMessage(
+        alt_text="Carousel template",
+        template=CarouselTemplate(
+            columns=columns_list,
         ),
     )
     return carousel_template_message
