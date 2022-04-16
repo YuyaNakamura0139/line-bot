@@ -84,62 +84,38 @@ def final_check_button(day, menu):
     return confirm_template_message
 
 
-def select_practice_template():
+def select_parent_practice_template():
+    parent_practice_name_list = ["アップ", "シュート", "トランジッション", "定位置攻撃・守備", "セットプレー"]
+    columns_list = []
+    for index, parent_practice_name in enumerate(parent_practice_name_list):
+        columns_list.append(
+            CarouselColumn(
+                title=f"{parent_practice_name}",
+                text=f"{parent_practice_name}",
+                actions=[MessageAction(label="この練習から選ぶ", text=f"{index+1}")],
+            )
+        )
+
     carousel_template_message = TemplateSendMessage(
         alt_text="Carousel template",
-        template=CarouselTemplate(
-            columns=[
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-                CarouselColumn(
-                    title="this is menu1",
-                    text="description1",
-                    actions=[MessageAction(label="message1", text="message text1")],
-                ),
-                CarouselColumn(
-                    title="this is menu2",
-                    text="description2",
-                    actions=[MessageAction(label="message2", text="message text2")],
-                ),
-            ]
-        ),
+        template=CarouselTemplate(columns=columns_list),
+    )
+    return carousel_template_message
+
+
+def select_child_practice_template(child_practice_name_list):
+    columns_list = []
+    for child_practice_name in child_practice_name_list:
+        columns_list.append(
+            CarouselColumn(
+                title=f"{child_practice_name}",
+                text=f"{child_practice_name}",
+                actions=[MessageAction(label="この練習を追加する", text="はい")],
+            )
+        )
+
+    carousel_template_message = TemplateSendMessage(
+        alt_text="Carousel template",
+        template=CarouselTemplate(columns=columns_list),
     )
     return carousel_template_message
