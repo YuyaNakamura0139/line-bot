@@ -29,6 +29,7 @@ from button_template import (
     select_child_practice_template,
     practice_check_button,
     practice_info_template,
+    notification_template,
 )
 
 from create_rich_menu import create_rich_menu
@@ -70,11 +71,6 @@ async def handle_events(events):
                 if text == "スタート":
                     line_api.reply_message(e.reply_token, select_day_template())
                     db_update_context(user_id=user_id, context="1")
-                else:
-                    line_api.reply_message(
-                        e.reply_token,
-                        first_notification,
-                    )
 
             elif user["context"] == "1":
                 db_update_day(user_id=user_id, day=text)
@@ -170,6 +166,15 @@ async def handle_events(events):
                     # 全体通知部分
                     line_api.push_message(
                         GROUP_ID, TextMessage(text="次の練習メニューです。\n周知お願いします。")
+                    )
+                    line_api.push_message(
+                        GROUP_ID,
+                        notification_template(
+                            user["day"],
+                            user["time"],
+                            user["practice_name"],
+                            user["practice_time"],
+                        ),
                     )
                     line_api.push_message(
                         GROUP_ID,
