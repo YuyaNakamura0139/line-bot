@@ -12,27 +12,34 @@ collection_practice_menu = database.practice_menu
 def practice_serializer(practice) -> dict:
     return {
         "id": str(practice["_id"]),
-        "practice_id": practice["practice_id"],
+        "practice_period": practice["practice_period"],
         "practice_name": practice["practice_name"],
         "url": practice["url"],
     }
 
 
-def db_get_practice_name_list_by_practice_id(practice_id: str) -> list:
-    """practice_idに一致するpractice_nameの要素をリストで返す"""
+def db_get_practice_name_list_by_practice_period(practice_period: str) -> list:
+    """practice_periodに一致するpractice_nameの要素をリストで返す"""
 
-    practice_name_list = []
-    for practice in collection_practice_menu.find({"practice_id": practice_id}).to_list(
-        length=50
-    ):
-        practice_name_list.append(practice.name)
-    return practice_name_list
+    return [
+        practice["practice_name"]
+        for practice in collection_practice_menu.find(
+            {"practice_period": practice_period}
+        )
+    ]
 
 
-def db_get_practice_menu(practice_id: str) -> dict:
+def db_get_url_by_practice_name(practice_name: str) -> str:
+    """practice_nameからurlを取得"""
+
+    practice = collection_practice_menu.find_one({"practice_name": practice_name})
+    return practice["url"]
+
+
+def db_get_practice_menu(practice_period: str) -> dict:
     """練習メニュー情報の取得"""
 
-    practice = collection_practice_menu.find_one({"pracitce_id": practice_id})
+    practice = collection_practice_menu.find_one({"pracitce_id": practice_period})
     return practice
 
 

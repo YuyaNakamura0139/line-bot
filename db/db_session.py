@@ -18,8 +18,8 @@ def db_register(user_id: str) -> dict:
             "user_id": user_id,
             "context": "0",
             "day": "",
-            "menu_name": "",
-            "menu_time": "",
+            "practice_name": [],
+            "practice_time": [],
             "last_sentence": "",
             "url": [],
         }
@@ -42,19 +42,21 @@ def db_update_day(user_id: str, day: str) -> None:
         collection_user.update_one({"user_id": user_id}, {"$set": {"day": day}})
 
 
-def db_add_menu_name(user_id: str, menu: str) -> None:
-    """menu_nameへの追加"""
-    user = collection_user.find_one({"user_id": user_id})
-    if user:
-        collection_user.update_one({"user_id": user_id}, {"$push": {"menu_name": menu}})
-
-
-def db_add_menu_time(user_id: str, menu_time: str) -> None:
-    """menu_timeへの追加"""
+def db_add_practice_name(user_id: str, practice_name: str) -> None:
+    """practice_nameへの追加"""
     user = collection_user.find_one({"user_id": user_id})
     if user:
         collection_user.update_one(
-            {"user_id": user_id}, {"$push": {"menu_time": menu_time}}
+            {"user_id": user_id}, {"$push": {"practice_name": practice_name}}
+        )
+
+
+def db_add_practice_time(user_id: str, practice_time: str) -> None:
+    """practice_timeへの追加"""
+    user = collection_user.find_one({"user_id": user_id})
+    if user:
+        collection_user.update_one(
+            {"user_id": user_id}, {"$push": {"practice_time": practice_time}}
         )
 
 
