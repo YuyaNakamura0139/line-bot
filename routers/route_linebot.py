@@ -3,7 +3,7 @@ from linebot import WebhookParser
 from linebot.models import TextMessage
 from aiolinebot import AioLineBotApi
 
-from config import ACCESS_TOKEN, SECRET
+from config import ACCESS_TOKEN, SECRET, GROUP_ID
 
 from db.db_session import (
     db_register,
@@ -139,7 +139,7 @@ async def handle_events(events):
             elif user["context"] == "8":
                 if text == "はい":
                     line_api.push_message(
-                        user_id,
+                        GROUP_ID,
                         practice_info_template(user["practice_name"][:-1], user["url"]),
                     )
                     line_api.reply_message(
