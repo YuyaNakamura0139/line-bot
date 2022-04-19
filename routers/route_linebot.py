@@ -10,6 +10,7 @@ from db.db_session import (
     db_update_context,
     db_reset_status,
     db_update_day,
+    db_update_time,
     db_update_last_sentence,
     db_add_practice_name,
     db_add_practice_time,
@@ -60,8 +61,15 @@ async def handle_events(events):
                     line_api.reply_message(e.reply_token, start_button_template())
 
             elif user["context"] == "1":
+                db_update_day(user_id=user_id, day=text)
+                line_api.reply_message(
+                    e.reply_token, TextMessage(text="次は練習時間帯を入力してね！\n例)18:00~21:00")
+                )
+                db_update_context(user_id=user_id, context="2")
+
+            elif user["context"] == "2":
                 if not user["practice_name"]:
-                    db_update_day(user_id=user_id, day=text)
+                    db_update_time(user_id=user_id, time=text)
                     line_api.push_message(
                         user_id, TextMessage(text="これから練習メニューを選んでいくよ！")
                     )
@@ -70,16 +78,16 @@ async def handle_events(events):
                 elif text == "いいえ":
                     line_api.reply_message(
                         e.reply_token,
-                        TextMessage(text="ゲーム時間を入力してね！\n例)(30分×2, 20分×1)"),
+                        TextMessage(text="ゲーム時間を入力してね！\n例)30分×2, 20分×1"),
                     )
                     db_add_practice_name(user_id=user_id, practice_name="ゲーム")
-                    db_update_context(user_id=user_id, context="5")
+                    db_update_context(user_id=user_id, context="6")
                     break
                 line_api.reply_message(e.reply_token, select_parent_practice_template())
-                db_update_context(user_id=user_id, context="2")
+                db_update_context(user_id=user_id, context="3")
 
             # 親メニュー選択処理
-            elif user["context"] == "2":
+            elif user["context"] == "3":
                 if text == "アップTR":
                     practice_period = "1"
                 elif text == "シュートTR":
@@ -99,25 +107,27 @@ async def handle_events(events):
                         child_practice_name_list=child_practice_name_list
                     ),
                 )
-                db_update_context(user_id=user_id, context="3")
+                db_update_context(user_id=user_id, context="4")
 
             # 子メニュー選択処理
-            elif user["context"] == "3":
+            elif user["context"] == "4":
                 db_add_practice_name(user_id=user_id, practice_name=text)
                 db_add_url(user_id=user_id, url=db_get_url_by_practice_name(text))
                 line_api.reply_message(
                     e.reply_token,
-                    TextMessage(text=f"{text}の練習時間を入力してね！\n例)15分2セット→(15分×2)"),
+                    TextMessage(
+                        text=f"{text}の練習時間を入力してね！\n例)15分1セット→15分×1,\n20分2セット→20分×2"
+                    ),
                 )
-                db_update_context(user_id=user_id, context="4")
+                db_update_context(user_id=user_id, context="5")
 
             # 練習時間入力処理
-            elif user["context"] == "4":
+            elif user["context"] == "5":
                 db_add_practice_time(user_id=user_id, practice_time=text)
                 line_api.reply_message(e.reply_token, practice_check_button())
-                db_update_context(user_id=user_id, context="1")
+                db_update_context(user_id=user_id, context="2")
 
-            elif user["context"] == "5":
+            elif user["context"] == "6":
                 db_add_practice_time(user_id=user_id, practice_time=text)
                 line_api.reply_message(
                     e.reply_token,
@@ -130,7 +140,10 @@ async def handle_events(events):
                 line_api.reply_message(
                     e.reply_token,
                     final_check_button(
-                        user["day"], user["practice_name"], user["practice_time"]
+                        user["day"],
+                        user["time"],
+                        user["practice_name"],
+                        user["practice_time"],
                     ),
                 )
                 db_update_context(user_id=user_id, context="8")
@@ -138,10 +151,19 @@ async def handle_events(events):
             # 最終確認・通知処理
             elif user["context"] == "8":
                 if text == "はい":
+                    # 全体通知部分
+                    line_api.push_message(
+                        GROUP_ID, TextMessage(text="次の練習メニューです。\n周知お願いします。")
+                    )
                     line_api.push_message(
                         GROUP_ID,
                         practice_info_template(user["practice_name"][:-1], user["url"]),
                     )
+                    last_sentence = user["last_sentence"]
+                    line_api.push_message(
+                        GROUP_ID, TextMessage(text=f"メッセージ：\n{last_sentence}")
+                    )
+
                     line_api.reply_message(
                         e.reply_token, TextMessage(text="お疲れ様！\n全体ラインに通知しておいたよ！")
                     )
@@ -149,7 +171,7 @@ async def handle_events(events):
                     db_reset_status(user_id)
                 elif text == "いいえ":
                     line_api.reply_message(
-                        e.reply_token, TextMessage(text="最初からやり直してね")
+                        e.reply_token, TextMessage(text="最初からやり直してね!")
                     )
                     line_api.push_message(user_id, start_button_template())
                     db_reset_status(user_id)

@@ -97,7 +97,7 @@ def select_day_template():
     return buttons_template_message
 
 
-def final_check_button(day, practice_name_list, practice_time_list):
+def final_check_button(day, time, practice_name_list, practice_time_list):
     """最終確認ボタン"""
 
     practice_name_and_practice_time = ""
@@ -107,7 +107,7 @@ def final_check_button(day, practice_name_list, practice_time_list):
     confirm_template_message = TemplateSendMessage(
         alt_text="Confirm template",
         template=ConfirmTemplate(
-            text=f"以下の内容で通知しても良いかな？\n練習予定日: {day}\n練習メニュー:\n{practice_name_and_practice_time}",
+            text=f"これで通知しても良いかな？\n練習予定日: {day}\n練習時間帯: {time}\n練習メニュー:\n{practice_name_and_practice_time}",
             actions=[
                 MessageAction(label="はい", text="はい"),
                 MessageAction(label="いいえ", text="いいえ"),

@@ -18,6 +18,7 @@ def db_register(user_id: str) -> dict:
             "user_id": user_id,
             "context": "0",
             "day": "",
+            "time": "",
             "practice_name": [],
             "practice_time": [],
             "last_sentence": "",
@@ -40,6 +41,13 @@ def db_update_day(user_id: str, day: str) -> None:
     user = collection_user.find_one({"user_id": user_id})
     if user:
         collection_user.update_one({"user_id": user_id}, {"$set": {"day": day}})
+
+
+def db_update_time(user_id: str, time: str) -> None:
+    """timeのアップデート"""
+    user = collection_user.find_one({"user_id": user_id})
+    if user:
+        collection_user.update_one({"user_id": user_id}, {"$set": {"time": time}})
 
 
 def db_add_practice_name(user_id: str, practice_name: str) -> None:
