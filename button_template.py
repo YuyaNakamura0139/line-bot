@@ -57,23 +57,6 @@ def get_last_4_days():
     return [today, tomorrow, day_after_tomorrow, two_days_after_tomorrow]
 
 
-def start_button_template():
-    """スタートボタン"""
-
-    buttons_template_message = TemplateSendMessage(
-        alt_text="Buttons Template",
-        template=ButtonsTemplate(
-            title="練習メニュー通知くん",
-            text="スタートボタンを押してね!\n「キャンセル」と入力するといつでもやり直せるよ。",
-            actions=[
-                MessageAction(label="スタート", text="スタート"),
-            ],
-        ),
-    )
-
-    return buttons_template_message
-
-
 def select_day_template():
     """日付選択ボタン"""
 
