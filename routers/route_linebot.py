@@ -23,7 +23,6 @@ from db.db_practice_menu import (
 )
 
 from button_template import (
-    start_button_template,
     select_day_template,
     final_check_button,
     select_parent_practice_template,
@@ -32,12 +31,23 @@ from button_template import (
     practice_info_template,
 )
 
+from create_rich_menu import create_rich_menu
+
 router = APIRouter(prefix="/messaging_api/handle_request", tags=["line-bot"])
 
 
 # APIクライアントとパーサーをインスタンス化
 line_api = AioLineBotApi(channel_access_token=ACCESS_TOKEN)
 parser = WebhookParser(channel_secret=SECRET)
+
+
+rich_menu_id = line_api.create_rich_menu(rich_menu=create_rich_menu())
+with open("./image/rich_menu_image.jpg", "rb") as f:
+    line_api.set_rich_menu_image(rich_menu_id, "image/jpeg", f)
+line_api.set_default_rich_menu(rich_menu_id=rich_menu_id)
+
+
+first_notification = TextMessage(text="メニューを開いてね！")
 
 
 async def handle_events(events):
@@ -50,7 +60,10 @@ async def handle_events(events):
             user = db_register(user_id)
 
             if user["context"] != "0" and text == "キャンセル":
-                line_api.reply_message(e.reply_token, start_button_template())
+                line_api.reply_message(
+                    e.reply_token,
+                    first_notification,
+                )
                 db_reset_status(user_id)
 
             elif user["context"] == "0":
@@ -58,7 +71,10 @@ async def handle_events(events):
                     line_api.reply_message(e.reply_token, select_day_template())
                     db_update_context(user_id=user_id, context="1")
                 else:
-                    line_api.reply_message(e.reply_token, start_button_template())
+                    line_api.reply_message(
+                        e.reply_token,
+                        first_notification,
+                    )
 
             elif user["context"] == "1":
                 db_update_day(user_id=user_id, day=text)
@@ -131,7 +147,7 @@ async def handle_events(events):
                 db_add_practice_time(user_id=user_id, practice_time=text)
                 line_api.reply_message(
                     e.reply_token,
-                    TextMessage(text="最後に、次の練習で意識することなど、メンバーに伝えたいことを自由に入力してください。"),
+                    TextMessage(text="最後に、次の練習で意識することなど、メンバーに伝えたいことを自由に入力してね！"),
                 )
                 db_update_context(user_id=user_id, context="7")
 
@@ -167,13 +183,19 @@ async def handle_events(events):
                     line_api.reply_message(
                         e.reply_token, TextMessage(text="お疲れ様！\n全体ラインに通知しておいたよ！")
                     )
-                    line_api.push_message(user_id, start_button_template())
+                    line_api.push_message(
+                        user_id,
+                        first_notification,
+                    )
                     db_reset_status(user_id)
                 elif text == "いいえ":
                     line_api.reply_message(
                         e.reply_token, TextMessage(text="最初からやり直してね!")
                     )
-                    line_api.push_message(user_id, start_button_template())
+                    line_api.push_message(
+                        user_id,
+                        first_notification,
+                    )
                     db_reset_status(user_id)
                 else:
                     line_api.reply_message(
