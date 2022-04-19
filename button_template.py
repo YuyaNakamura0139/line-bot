@@ -1,5 +1,5 @@
 import datetime
-import locale
+import calendar
 
 from linebot.models import (
     TemplateSendMessage,
@@ -13,21 +13,48 @@ from linebot.models import (
 
 
 def get_last_4_days():
-    """直近4日間の年月日+曜日をリストで返す"""
 
-    locale.setlocale(locale.LC_TIME, "ja_JP.UTF-8")
+    weekday_dic = {
+        "Sunday": "日",
+        "Monday": "月",
+        "Tuesday": "火",
+        "Wednesday": "水",
+        "Thursday": "木",
+        "Friday": "金",
+        "Saturday": "土",
+    }
 
     today = datetime.datetime.now()
     tomorrow = today + datetime.timedelta(days=1)
     day_after_tomorrow = today + datetime.timedelta(days=2)
     two_days_after_tomorrow = today + datetime.timedelta(days=3)
 
-    return [
-        today.strftime("%Y年%m月%d日(%a)"),
-        tomorrow.strftime("%Y年%m月%d日(%a)"),
-        day_after_tomorrow.strftime("%Y年%m月%d日(%a)"),
-        two_days_after_tomorrow.strftime("%Y年%m月%d日(%a)"),
-    ]
+    today = (
+        today.strftime("%Y年%m月%d日")
+        + "("
+        + weekday_dic[calendar.day_name[today.weekday()]]
+        + ")"
+    )
+    tomorrow = (
+        tomorrow.strftime("%Y年%m月%d日")
+        + "("
+        + weekday_dic[calendar.day_name[tomorrow.weekday()]]
+        + ")"
+    )
+    day_after_tomorrow = (
+        day_after_tomorrow.strftime("%Y年%m月%d日")
+        + "("
+        + weekday_dic[calendar.day_name[day_after_tomorrow.weekday()]]
+        + ")"
+    )
+    two_days_after_tomorrow = (
+        two_days_after_tomorrow.strftime("%Y年%m月%d日")
+        + "("
+        + weekday_dic[calendar.day_name[two_days_after_tomorrow.weekday()]]
+        + ")"
+    )
+
+    return [today, tomorrow, day_after_tomorrow, two_days_after_tomorrow]
 
 
 def start_button_template():

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi import Request, Response, HTTPException, Depends
+from fastapi import Response, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from starlette.status import HTTP_201_CREATED
