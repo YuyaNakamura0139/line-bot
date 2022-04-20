@@ -60,7 +60,7 @@ async def handle_events(events):
             # ユーザーのセッション情報を取得
             user = db_register(user_id)
 
-            if user["context"] != "0" and text == "キャンセル":
+            if text == "キャンセル":
                 line_api.reply_message(
                     e.reply_token,
                     first_notification,
