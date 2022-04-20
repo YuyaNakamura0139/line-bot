@@ -47,7 +47,7 @@ def db_get_practice_menus() -> list:
     """練習メニューの一覧を取得"""
 
     practices = []
-    for practice in collection_practice_menu.find().to_list(length=100):
+    for practice in collection_practice_menu.find():
         practices.append(practice_serializer(practice))
     return practices
 
