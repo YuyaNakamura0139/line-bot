@@ -1,9 +1,9 @@
-from decouple import config
 from pymongo import MongoClient
 from typing import Union
 from bson import ObjectId
 
-MONGO_API_KEY = config("MONGO_API_KEY")
+from config import MONGO_API_KEY
+
 client = MongoClient(MONGO_API_KEY)
 database = client.LINE_BOT
 collection_practice_menu = database.practice_menu

@@ -1,4 +1,3 @@
-from email.mime import image
 from linebot.models import (
     RichMenu,
     RichMenuSize,
